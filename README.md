@@ -19,7 +19,7 @@ npm o yarn
 🔧 Instalación y ejecución local
 Clona este repositorio:
 
-git clone https://github.com/Reischkan/financiera-landing.git
+git clone https://github.com/Reischkan/financiera-landing-page.git
 cd financiera-landing
 Instala las dependencias:
 
