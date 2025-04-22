@@ -16,11 +16,13 @@ const PersonasList = () => {
     setLoading(true);
     try {
       const response = await getPersonas();
-      setPersonas(response.data);
+      // Ensure we're getting an array from the response
+      setPersonas(Array.isArray(response) ? response : []);
       setError(null);
     } catch (err) {
       setError('Error al cargar las personas. Por favor, intente de nuevo.');
       console.error('Error al cargar las personas:', err);
+      setPersonas([]);
     } finally {
       setLoading(false);
     }
@@ -66,7 +68,7 @@ const PersonasList = () => {
         </div>
       )}
 
-      {personas.length === 0 ? (
+      {!Array.isArray(personas) || personas.length === 0 ? (
         <div className="alert alert-info">No hay personas disponibles.</div>
       ) : (
         <div className="table-responsive">
@@ -89,10 +91,10 @@ const PersonasList = () => {
                   <td>{persona.nombre}</td>
                   <td>{persona.documento}</td>
                   <td>{persona.minutos_diarios_asignados}</td>
-                  <td>{new Date(persona.fecha_ingreso).toLocaleDateString()}</td>
+                  <td>{persona.fecha_ingreso ? new Date(persona.fecha_ingreso).toLocaleDateString() : '-'}</td>
                   <td>
                     <span className={`badge ${persona.estado === 'activo' ? 'bg-success' : 'bg-danger'}`}>
-                      {persona.estado}
+                      {persona.estado || 'desconocido'}
                     </span>
                   </td>
                   <td>

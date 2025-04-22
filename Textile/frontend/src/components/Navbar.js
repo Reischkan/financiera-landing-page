@@ -39,15 +39,66 @@ const Navbar = () => {
                 <i className="fas fa-users me-1"></i> Personas
               </NavLink>
             </li>
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/referencias">
+            <li className="nav-item dropdown">
+              <a className="nav-link dropdown-toggle" href="#" id="referenciasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i className="fas fa-tag me-1"></i> Referencias
-              </NavLink>
+              </a>
+              <ul className="dropdown-menu" aria-labelledby="referenciasDropdown">
+                <li>
+                  <NavLink className="dropdown-item" to="/referencias">
+                    <i className="fas fa-list me-1"></i> Listado de Referencias
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/tallas-referencia">
+                    <i className="fas fa-ruler me-1"></i> Tallas de Referencias
+                  </NavLink>
+                </li>
+              </ul>
             </li>
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/produccion">
+            <li className="nav-item dropdown">
+              <a className="nav-link dropdown-toggle" href="#" id="asignacionesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i className="fas fa-tasks me-1"></i> Asignaciones
+              </a>
+              <ul className="dropdown-menu" aria-labelledby="asignacionesDropdown">
+                <li>
+                  <NavLink className="dropdown-item" to="/asignaciones-modulo">
+                    <i className="fas fa-user-plus me-1"></i> Asignación de Personas
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/asignaciones-referencia">
+                    <i className="fas fa-clipboard-list me-1"></i> Asignación de Referencias
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+            <li className="nav-item dropdown">
+              <a className="nav-link dropdown-toggle" href="#" id="produccionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i className="fas fa-chart-line me-1"></i> Producción
-              </NavLink>
+              </a>
+              <ul className="dropdown-menu" aria-labelledby="produccionDropdown">
+                <li>
+                  <NavLink className="dropdown-item" to="/franjas-horarias">
+                    <i className="fas fa-clock me-1"></i> Franjas Horarias
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/registros-produccion">
+                    <i className="fas fa-clipboard-check me-1"></i> Registros de Producción
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/registros-produccion/resumen">
+                    <i className="fas fa-tachometer-alt me-1"></i> Resumen de Producción
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/historial-produccion">
+                    <i className="fas fa-history me-1"></i> Historial de Producción
+                  </NavLink>
+                </li>
+              </ul>
             </li>
           </ul>
         </div>

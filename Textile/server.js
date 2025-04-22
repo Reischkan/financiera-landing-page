@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { connectToDatabase } = require('./backend/config/db.connection');
+const { initializeDatabase } = require('./backend/config/db.init');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,10 +14,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Conexión a la base de datos
 let connection;
-async function initializeDatabase() {
+async function connectDB() {
   try {
     connection = await connectToDatabase();
     console.log('Base de datos conectada exitosamente');
+    // Inicializar la base de datos
+    await initializeDatabase();
   } catch (error) {
     console.error('Error al conectar a la base de datos:', error);
     process.exit(1);
@@ -31,10 +34,21 @@ app.get('/', (req, res) => {
 // Importar rutas
 app.use('/api/modulos', require('./backend/routes/modulo.routes'));
 app.use('/api/personas', require('./backend/routes/persona.routes'));
+app.use('/api/referencias', require('./backend/routes/referencia.routes'));
+app.use('/api/asignaciones-modulo', require('./backend/routes/asignacionModulo.routes'));
+app.use('/api/asignaciones-referencia', require('./backend/routes/asignacionReferencia.routes'));
+app.use('/api/tallas-referencia', require('./backend/routes/tallaReferencia.routes'));
+app.use('/api/franjas-horarias', require('./backend/routes/franjaHoraria.routes'));
+app.use('/api/registros-produccion', require('./backend/routes/registroProduccion.routes'));
+
 // TODO: Implementar el resto de las rutas para cada entidad
+// - Ausencia
+// - Nota
+// - HistorialProduccion
+// - Usuario
 
 // Iniciar el servidor
 app.listen(PORT, async () => {
-  await initializeDatabase();
+  await connectDB();
   console.log(`Servidor ejecutándose en el puerto ${PORT}`);
 }); 

@@ -13,7 +13,7 @@ const Home = () => {
         <p>Selecciona una de las opciones para comenzar:</p>
         
         <div className="row mt-4">
-          <div className="col-md-3 mb-4">
+          <div className="col-md-4 mb-4">
             <div className="card text-center h-100">
               <div className="card-body">
                 <i className="fas fa-boxes fa-3x mb-3 text-primary"></i>
@@ -26,7 +26,7 @@ const Home = () => {
             </div>
           </div>
           
-          <div className="col-md-3 mb-4">
+          <div className="col-md-4 mb-4">
             <div className="card text-center h-100">
               <div className="card-body">
                 <i className="fas fa-users fa-3x mb-3 text-success"></i>
@@ -39,7 +39,7 @@ const Home = () => {
             </div>
           </div>
           
-          <div className="col-md-3 mb-4">
+          <div className="col-md-4 mb-4">
             <div className="card text-center h-100">
               <div className="card-body">
                 <i className="fas fa-tag fa-3x mb-3 text-info"></i>
@@ -52,7 +52,59 @@ const Home = () => {
             </div>
           </div>
           
-          <div className="col-md-3 mb-4">
+          <div className="col-md-4 mb-4">
+            <div className="card text-center h-100">
+              <div className="card-body">
+                <i className="fas fa-user-plus fa-3x mb-3 text-secondary"></i>
+                <h5 className="card-title">Asignaciones de Personas</h5>
+                <p className="card-text">Administra la asignación de personas a módulos.</p>
+                <Link to="/asignaciones-modulo" className="btn btn-secondary">
+                  <i className="fas fa-arrow-right me-1"></i> Ir a Asignaciones
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          <div className="col-md-4 mb-4">
+            <div className="card text-center h-100">
+              <div className="card-body">
+                <i className="fas fa-tasks fa-3x mb-3 text-purple" style={{ color: '#8655c4' }}></i>
+                <h5 className="card-title">Asignaciones de Referencias</h5>
+                <p className="card-text">Administra las referencias asignadas a módulos.</p>
+                <Link to="/asignaciones-referencia" className="btn btn-purple" style={{ backgroundColor: '#8655c4', color: 'white' }}>
+                  <i className="fas fa-arrow-right me-1"></i> Ir a Asignaciones
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          <div className="col-md-4 mb-4">
+            <div className="card text-center h-100">
+              <div className="card-body">
+                <i className="fas fa-ruler fa-3x mb-3 text-danger"></i>
+                <h5 className="card-title">Tallas de Referencias</h5>
+                <p className="card-text">Gestiona las tallas y cantidades por referencia.</p>
+                <Link to="/tallas-referencia" className="btn btn-danger">
+                  <i className="fas fa-arrow-right me-1"></i> Ir a Tallas
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          <div className="col-md-4 mb-4">
+            <div className="card text-center h-100">
+              <div className="card-body">
+                <i className="fas fa-clock fa-3x mb-3 text-dark"></i>
+                <h5 className="card-title">Franjas Horarias</h5>
+                <p className="card-text">Gestiona los horarios de producción.</p>
+                <Link to="/franjas-horarias" className="btn btn-dark">
+                  <i className="fas fa-arrow-right me-1"></i> Ir a Franjas Horarias
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          <div className="col-md-4 mb-4">
             <div className="card text-center h-100">
               <div className="card-body">
                 <i className="fas fa-chart-line fa-3x mb-3 text-warning"></i>
