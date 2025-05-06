@@ -16,14 +16,17 @@ const FranjaHorariaList = () => {
 
   // Función para cargar las franjas horarias
   const loadFranjasHorarias = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      setError(null);
       const response = await getFranjasHorarias();
-      setFranjasHorarias(response.data);
-      setLoading(false);
+      // Asegurar que recibimos un array
+      setFranjasHorarias(Array.isArray(response) ? response : []);
+      setError(null);
     } catch (err) {
-      setError('Error al cargar las franjas horarias: ' + (err.response?.data?.message || err.message));
+      setError('Error al cargar las franjas horarias. Por favor, intente de nuevo.');
+      console.error('Error al cargar las franjas horarias:', err);
+      setFranjasHorarias([]); // Inicializar como array vacío en caso de error
+    } finally {
       setLoading(false);
     }
   };
@@ -101,9 +104,9 @@ const FranjaHorariaList = () => {
       )}
       
       {error && (
-        <div className="alert alert-danger alert-dismissible fade show" role="alert">
+        <div className="alert alert-danger" role="alert">
           {error}
-          <button type="button" className="btn-close" onClick={() => setError(null)}></button>
+          <button type="button" className="btn-close float-end" onClick={() => setError(null)}></button>
         </div>
       )}
 
@@ -113,24 +116,22 @@ const FranjaHorariaList = () => {
       ) : (
         /* Tabla de franjas horarias */
         <div className="table-responsive">
-          <table className="table table-striped table-hover">
-            <thead className="table-dark">
-              <tr>
-                <th>ID</th>
-                <th>Hora Inicio</th>
-                <th>Hora Fin</th>
-                <th>Descripción</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {franjasHorarias.length === 0 ? (
+          {!Array.isArray(franjasHorarias) || franjasHorarias.length === 0 ? (
+            <div className="alert alert-info">No hay franjas horarias disponibles.</div>
+          ) : (
+            <table className="table table-striped table-hover">
+              <thead className="table-dark">
                 <tr>
-                  <td colSpan="6" className="text-center">No hay franjas horarias registradas</td>
+                  <th>ID</th>
+                  <th>Hora Inicio</th>
+                  <th>Hora Fin</th>
+                  <th>Descripción</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
-              ) : (
-                franjasHorarias.map((franja) => (
+              </thead>
+              <tbody>
+                {franjasHorarias.map((franja) => (
                   <tr key={franja.id_franja}>
                     <td>{franja.id_franja}</td>
                     <td>{formatTime(franja.hora_inicio)}</td>
@@ -167,10 +168,10 @@ const FranjaHorariaList = () => {
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
     </div>

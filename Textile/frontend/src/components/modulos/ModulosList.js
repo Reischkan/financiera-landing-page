@@ -16,17 +16,23 @@ const ModulosList = () => {
     setLoading(true);
     try {
       const response = await getModulos();
-      setModulos(response.data);
+      setModulos(Array.isArray(response) ? response : []);
       setError(null);
     } catch (err) {
       setError('Error al cargar los módulos. Por favor, intente de nuevo.');
       console.error('Error al cargar los módulos:', err);
+      setModulos([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
+    if (!id) {
+      setError('ID de módulo no válido');
+      return;
+    }
+
     if (window.confirm('¿Está seguro de que desea eliminar este módulo?')) {
       try {
         await deleteModulo(id);
@@ -36,6 +42,31 @@ const ModulosList = () => {
         setError('Error al eliminar el módulo. Por favor, intente de nuevo.');
         console.error('Error al eliminar el módulo:', err);
       }
+    }
+  };
+
+  // Función segura para formatear fechas
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      return isNaN(date.getTime()) ? '-' : date.toLocaleDateString();
+    } catch (error) {
+      console.error('Error al formatear fecha:', error);
+      return '-';
+    }
+  };
+
+  // Función para obtener clase de badge según estado
+  const getBadgeClass = (estado) => {
+    if (!estado) return 'bg-secondary';
+    switch (estado.toLowerCase()) {
+      case 'activo':
+        return 'bg-success';
+      case 'inactivo':
+        return 'bg-danger';
+      default:
+        return 'bg-secondary';
     }
   };
 
@@ -66,7 +97,7 @@ const ModulosList = () => {
         </div>
       )}
 
-      {modulos.length === 0 ? (
+      {!Array.isArray(modulos) || modulos.length === 0 ? (
         <div className="alert alert-info">No hay módulos disponibles.</div>
       ) : (
         <div className="table-responsive">
@@ -82,26 +113,27 @@ const ModulosList = () => {
             </thead>
             <tbody>
               {modulos.map((modulo) => (
-                <tr key={modulo.id_modulo}>
-                  <td>{modulo.id_modulo}</td>
-                  <td>{modulo.nombre}</td>
+                <tr key={modulo?.id_modulo || `unknown-${Math.random()}`}>
+                  <td>{modulo?.id_modulo || '-'}</td>
+                  <td>{modulo?.nombre || '-'}</td>
                   <td>
-                    <span className={`badge ${modulo.estado === 'activo' ? 'bg-success' : 'bg-danger'}`}>
-                      {modulo.estado}
+                    <span className={`badge ${getBadgeClass(modulo?.estado)}`}>
+                      {modulo?.estado || 'desconocido'}
                     </span>
                   </td>
-                  <td>{new Date(modulo.fecha_creacion).toLocaleDateString()}</td>
+                  <td>{formatDate(modulo?.fecha_creacion)}</td>
                   <td>
                     <div className="btn-group" role="group">
-                      <Link to={`/modulos/view/${modulo.id_modulo}`} className="btn btn-info btn-sm">
+                      <Link to={`/modulos/view/${modulo?.id_modulo}`} className="btn btn-info btn-sm">
                         <i className="fas fa-eye"></i>
                       </Link>
-                      <Link to={`/modulos/edit/${modulo.id_modulo}`} className="btn btn-warning btn-sm">
+                      <Link to={`/modulos/edit/${modulo?.id_modulo}`} className="btn btn-warning btn-sm">
                         <i className="fas fa-edit"></i>
                       </Link>
                       <button
                         className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete(modulo.id_modulo)}
+                        onClick={() => handleDelete(modulo?.id_modulo)}
+                        disabled={!modulo?.id_modulo}
                       >
                         <i className="fas fa-trash"></i>
                       </button>

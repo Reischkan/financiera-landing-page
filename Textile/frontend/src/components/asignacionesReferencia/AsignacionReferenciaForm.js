@@ -41,13 +41,13 @@ const AsignacionReferenciaForm = () => {
           getModulos()
         ]);
         
-        setReferencias(refResponse.data);
-        setModulos(modulosResponse.data);
+        setReferencias(refResponse.data || []);
+        setModulos(modulosResponse.data || []);
         
         // Si estamos editando, cargar los datos de la asignación
         if (isEditing) {
           const asignacionResponse = await getAsignacionReferencia(id);
-          const asignacion = asignacionResponse.data;
+          const asignacion = asignacionResponse.data || {};
           
           setFormData({
             id_modulo: asignacion.id_modulo || '',
@@ -62,6 +62,8 @@ const AsignacionReferenciaForm = () => {
       } catch (err) {
         console.error('Error al cargar datos:', err);
         setError('Error al cargar datos. Por favor, intente de nuevo.');
+        setReferencias([]);
+        setModulos([]);
       } finally {
         setLoading(false);
       }
@@ -189,7 +191,7 @@ const AsignacionReferenciaForm = () => {
                       required
                     >
                       <option value="">Seleccione un módulo</option>
-                      {modulos.map(modulo => (
+                      {Array.isArray(modulos) && modulos.map(modulo => (
                         <option key={modulo.id_modulo} value={modulo.id_modulo}>
                           {modulo.nombre}
                         </option>
@@ -211,7 +213,7 @@ const AsignacionReferenciaForm = () => {
                       required
                     >
                       <option value="">Seleccione una referencia</option>
-                      {referencias.map(referencia => (
+                      {Array.isArray(referencias) && referencias.map(referencia => (
                         <option key={referencia.id_referencia} value={referencia.id_referencia}>
                           {referencia.codigo} - {referencia.descripcion}
                         </option>

@@ -2,9 +2,11 @@
 echo Iniciando la aplicacion Textile...
 
 echo Iniciando el servidor backend...
-start cmd /k "cd backend && npm start"
+start cmd /k "npm run start"
 
 echo Iniciando el cliente frontend...
-start cmd /k "cd frontend && npm start"
+cd frontend
+start cmd /k "npm run start"
 
 echo Los servidores se estan iniciando en ventanas separadas. 
+cd .. 

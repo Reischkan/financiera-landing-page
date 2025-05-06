@@ -16,17 +16,23 @@ const TallaReferenciaList = () => {
     setLoading(true);
     try {
       const response = await getTallasReferencia();
-      setTallas(response.data);
+      setTallas(Array.isArray(response) ? response : []);
       setError(null);
     } catch (err) {
-      setError('Error al cargar las tallas de referencia. Por favor, intente de nuevo.');
-      console.error('Error al cargar las tallas de referencia:', err);
+      setError('Error al cargar las tallas. Por favor, intente de nuevo.');
+      console.error('Error al cargar las tallas:', err);
+      setTallas([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
+    if (!id) {
+      setError('ID de talla no válido');
+      return;
+    }
+
     if (window.confirm('¿Está seguro de que desea eliminar esta talla de referencia?')) {
       try {
         await deleteTallaReferencia(id);
@@ -37,6 +43,24 @@ const TallaReferenciaList = () => {
         console.error('Error al eliminar la talla de referencia:', err);
       }
     }
+  };
+
+  // Función para mostrar información de referencia de forma segura
+  const getReferenciaInfo = (talla) => {
+    if (!talla) return '-';
+    
+    const codigo = talla.codigo_referencia || '';
+    const descripcion = talla.descripcion_referencia || '';
+    
+    if (!codigo && !descripcion) return '-';
+    return codigo ? (descripcion ? `${codigo} - ${descripcion}` : codigo) : descripcion;
+  };
+
+  // Función para formatear número de forma segura
+  const formatNumber = (value) => {
+    if (value === undefined || value === null) return '-';
+    if (isNaN(parseFloat(value))) return '-';
+    return value.toString();
   };
 
   if (loading) {
@@ -71,8 +95,8 @@ const TallaReferenciaList = () => {
         </div>
       )}
 
-      {tallas.length === 0 ? (
-        <div className="alert alert-info">No hay tallas de referencia disponibles.</div>
+      {!Array.isArray(tallas) || tallas.length === 0 ? (
+        <div className="alert alert-info">No hay tallas disponibles.</div>
       ) : (
         <div className="table-responsive">
           <table className="table table-striped table-hover">
@@ -88,23 +112,24 @@ const TallaReferenciaList = () => {
             </thead>
             <tbody>
               {tallas.map((talla) => (
-                <tr key={talla.id_talla_referencia}>
-                  <td>{talla.id_talla_referencia}</td>
-                  <td>{talla.codigo_referencia || talla.descripcion_referencia}</td>
-                  <td>{talla.talla}</td>
-                  <td>{talla.cantidad}</td>
-                  <td>{talla.minutos_estimados}</td>
+                <tr key={talla?.id_talla_referencia || `unknown-${Math.random()}`}>
+                  <td>{talla?.id_talla_referencia || '-'}</td>
+                  <td>{getReferenciaInfo(talla)}</td>
+                  <td>{talla?.talla || '-'}</td>
+                  <td>{formatNumber(talla?.cantidad)}</td>
+                  <td>{formatNumber(talla?.minutos_estimados)}</td>
                   <td>
                     <div className="btn-group" role="group">
-                      <Link to={`/tallas-referencia/view/${talla.id_talla_referencia}`} className="btn btn-info btn-sm">
+                      <Link to={`/tallas-referencia/view/${talla?.id_talla_referencia}`} className="btn btn-info btn-sm">
                         <i className="fas fa-eye"></i>
                       </Link>
-                      <Link to={`/tallas-referencia/edit/${talla.id_talla_referencia}`} className="btn btn-warning btn-sm">
+                      <Link to={`/tallas-referencia/edit/${talla?.id_talla_referencia}`} className="btn btn-warning btn-sm">
                         <i className="fas fa-edit"></i>
                       </Link>
                       <button
                         className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete(talla.id_talla_referencia)}
+                        onClick={() => handleDelete(talla?.id_talla_referencia)}
+                        disabled={!talla?.id_talla_referencia}
                       >
                         <i className="fas fa-trash"></i>
                       </button>

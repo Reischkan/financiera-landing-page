@@ -17,11 +17,12 @@ const AsignacionReferenciaList = () => {
     try {
       setLoading(true);
       const response = await getAsignacionesReferencia();
-      setAsignaciones(response.data);
+      setAsignaciones(response.data || []);
       setError(null);
     } catch (err) {
       console.error('Error al cargar asignaciones:', err);
       setError('No se pudieron cargar las asignaciones. Por favor, intente de nuevo.');
+      setAsignaciones([]);
     } finally {
       setLoading(false);
     }
@@ -131,7 +132,7 @@ const AsignacionReferenciaList = () => {
             <span className="visually-hidden">Cargando...</span>
           </div>
         </div>
-      ) : asignaciones.length === 0 ? (
+      ) : !asignaciones || asignaciones.length === 0 ? (
         <div className="card">
           <div className="card-body text-center py-5">
             <i className="fas fa-inbox fa-3x mb-3 text-muted"></i>

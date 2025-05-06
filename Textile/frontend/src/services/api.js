@@ -2,50 +2,108 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api';
 
+// Función utilitaria para manejar errores de la API de manera consistente
+const handleApiError = (error, functionName) => {
+  // Registra el error en la consola para depuración
+  console.error(`Error en ${functionName}:`, error);
+  
+  // Manejo específico según el tipo de error
+  if (error.response) {
+    // El servidor respondió con un código de estado fuera del rango 2xx
+    console.error('Error de respuesta:', error.response.data);
+    console.error('Código HTTP:', error.response.status);
+    return Promise.reject({
+      message: error.response.data?.message || `Error del servidor: ${error.response.status}`,
+      status: error.response.status,
+      data: error.response.data
+    });
+  } else if (error.request) {
+    // La petición fue hecha pero no se recibió respuesta
+    console.error('Error de conexión:', error.request);
+    return Promise.reject({
+      message: 'No se pudo conectar con el servidor. Verifique su conexión a internet.',
+      type: 'networkError'
+    });
+  } else {
+    // Algo ocurrió durante la configuración de la petición
+    console.error('Error:', error.message);
+    return Promise.reject({
+      message: error.message || 'Ocurrió un error inesperado',
+      type: 'unknownError'
+    });
+  }
+};
+
+// Función segura para manejar respuestas
+const processResponse = (response, functionName) => {
+  try {
+    // Verificar si la respuesta tiene la propiedad data
+    if (response && response.data !== undefined) {
+      return response.data;
+    }
+    
+    // Si response ya es el dato que queremos (axios ya extrajo data)
+    if (response) {
+      return response;
+    }
+    
+    console.warn(`${functionName}: Respuesta inesperada`, response);
+    return []; // Valor predeterminado seguro
+  } catch (error) {
+    console.error(`Error procesando respuesta en ${functionName}:`, error);
+    return []; // Valor predeterminado seguro en caso de error
+  }
+};
+
 // Módulos
 export const getModulos = () => {
   return axios.get(`${API_URL}/modulos`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getModulos:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getModulos'))
+    .catch(error => handleApiError(error, 'getModulos'));
 };
 
 export const getModulo = (id) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de módulo no válido' });
+  }
+  
   return axios.get(`${API_URL}/modulos/${id}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getModulo:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getModulo'))
+    .catch(error => handleApiError(error, 'getModulo'));
 };
 
 export const createModulo = (data) => {
+  if (!data || !data.nombre) {
+    return Promise.reject({ message: 'Datos de módulo incompletos' });
+  }
+  
   return axios.post(`${API_URL}/modulos`, data)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en createModulo:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'createModulo'))
+    .catch(error => handleApiError(error, 'createModulo'));
 };
 
 export const updateModulo = (id, data) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de módulo no válido' });
+  }
+  
+  if (!data || !data.nombre) {
+    return Promise.reject({ message: 'Datos de módulo incompletos' });
+  }
+  
   return axios.put(`${API_URL}/modulos/${id}`, data)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en updateModulo:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'updateModulo'))
+    .catch(error => handleApiError(error, 'updateModulo'));
 };
 
 export const deleteModulo = (id) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de módulo no válido' });
+  }
+  
   return axios.delete(`${API_URL}/modulos/${id}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en deleteModulo:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'deleteModulo'))
+    .catch(error => handleApiError(error, 'deleteModulo'));
 };
 
 // Personas
@@ -523,4 +581,16 @@ export const getRegistrosByReferencia = (idReferencia) => {
       console.error('Error en getRegistrosByReferencia:', error.response?.data || error.message);
       throw error;
     });
-}; 
+};
+
+// Interceptor global para manejar errores de red (opcional)
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (!error.response && error.message === 'Network Error') {
+      console.error('Error de red detectado');
+      // Aquí podríamos mostrar una notificación global
+    }
+    return Promise.reject(error);
+  }
+); 

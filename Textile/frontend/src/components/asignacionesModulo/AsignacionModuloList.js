@@ -16,17 +16,23 @@ const AsignacionModuloList = () => {
     setLoading(true);
     try {
       const response = await getAsignacionesModulo();
-      setAsignaciones(response.data);
+      setAsignaciones(Array.isArray(response) ? response : []);
       setError(null);
     } catch (err) {
       setError('Error al cargar las asignaciones. Por favor, intente de nuevo.');
       console.error('Error al cargar las asignaciones:', err);
+      setAsignaciones([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
+    if (!id) {
+      setError('ID de asignación no válido');
+      return;
+    }
+
     if (window.confirm('¿Está seguro de que desea eliminar esta asignación?')) {
       try {
         await deleteAsignacionModulo(id);
@@ -40,6 +46,11 @@ const AsignacionModuloList = () => {
   };
 
   const handleDesasignar = async (id) => {
+    if (!id) {
+      setError('ID de asignación no válido');
+      return;
+    }
+
     if (window.confirm('¿Está seguro de que desea desasignar a esta persona del módulo?')) {
       try {
         await desasignarPersona(id);
@@ -49,6 +60,31 @@ const AsignacionModuloList = () => {
         setError('Error al desasignar a la persona. Por favor, intente de nuevo.');
         console.error('Error al desasignar a la persona:', err);
       }
+    }
+  };
+
+  // Función segura para formatear fechas
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      return isNaN(date.getTime()) ? '-' : date.toLocaleDateString();
+    } catch (error) {
+      console.error('Error al formatear fecha:', error);
+      return '-';
+    }
+  };
+
+  // Función para obtener clase de badge según estado
+  const getBadgeClass = (estado) => {
+    if (!estado) return 'bg-secondary';
+    switch (estado.toLowerCase()) {
+      case 'activo':
+        return 'bg-success';
+      case 'inactivo':
+        return 'bg-danger';
+      default:
+        return 'bg-secondary';
     }
   };
 
@@ -84,7 +120,7 @@ const AsignacionModuloList = () => {
         </div>
       )}
 
-      {asignaciones.length === 0 ? (
+      {!Array.isArray(asignaciones) || asignaciones.length === 0 ? (
         <div className="alert alert-info">No hay asignaciones disponibles.</div>
       ) : (
         <div className="table-responsive">
@@ -102,41 +138,39 @@ const AsignacionModuloList = () => {
             </thead>
             <tbody>
               {asignaciones.map((asignacion) => (
-                <tr key={asignacion.id_asignacion}>
-                  <td>{asignacion.id_asignacion}</td>
-                  <td>{asignacion.nombre_modulo}</td>
-                  <td>{asignacion.nombre_persona}</td>
-                  <td>{new Date(asignacion.fecha_asignacion).toLocaleDateString()}</td>
+                <tr key={asignacion?.id_asignacion || `unknown-${Math.random()}`}>
+                  <td>{asignacion?.id_asignacion || '-'}</td>
+                  <td>{asignacion?.nombre_modulo || '-'}</td>
+                  <td>{asignacion?.nombre_persona || '-'}</td>
+                  <td>{formatDate(asignacion?.fecha_asignacion)}</td>
+                  <td>{formatDate(asignacion?.fecha_desasignacion)}</td>
                   <td>
-                    {asignacion.fecha_desasignacion 
-                      ? new Date(asignacion.fecha_desasignacion).toLocaleDateString() 
-                      : '-'}
-                  </td>
-                  <td>
-                    <span className={`badge ${asignacion.estado === 'activo' ? 'bg-success' : 'bg-danger'}`}>
-                      {asignacion.estado}
+                    <span className={`badge ${getBadgeClass(asignacion?.estado)}`}>
+                      {asignacion?.estado || 'desconocido'}
                     </span>
                   </td>
                   <td>
                     <div className="btn-group" role="group">
-                      <Link to={`/asignaciones-modulo/view/${asignacion.id_asignacion}`} className="btn btn-info btn-sm">
+                      <Link to={`/asignaciones-modulo/view/${asignacion?.id_asignacion}`} className="btn btn-info btn-sm">
                         <i className="fas fa-eye"></i>
                       </Link>
-                      <Link to={`/asignaciones-modulo/edit/${asignacion.id_asignacion}`} className="btn btn-warning btn-sm">
+                      <Link to={`/asignaciones-modulo/edit/${asignacion?.id_asignacion}`} className="btn btn-warning btn-sm">
                         <i className="fas fa-edit"></i>
                       </Link>
-                      {asignacion.estado === 'activo' && (
+                      {asignacion?.estado === 'activo' && (
                         <button
                           className="btn btn-secondary btn-sm"
-                          onClick={() => handleDesasignar(asignacion.id_asignacion)}
+                          onClick={() => handleDesasignar(asignacion?.id_asignacion)}
                           title="Desasignar Persona"
+                          disabled={!asignacion?.id_asignacion}
                         >
                           <i className="fas fa-user-minus"></i>
                         </button>
                       )}
                       <button
                         className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete(asignacion.id_asignacion)}
+                        onClick={() => handleDelete(asignacion?.id_asignacion)}
+                        disabled={!asignacion?.id_asignacion}
                       >
                         <i className="fas fa-trash"></i>
                       </button>
