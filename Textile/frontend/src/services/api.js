@@ -474,11 +474,8 @@ export const actualizarEstadoFranjaHoraria = (id, estado) => {
 // Registros de Producción
 export const getRegistrosProduccion = () => {
   return axios.get(`${API_URL}/registros-produccion`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getRegistrosProduccion:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getRegistrosProduccion'))
+    .catch(error => handleApiError(error, 'getRegistrosProduccion'));
 };
 
 export const getProduccionResumen = () => {
@@ -503,68 +500,86 @@ export const getResumenProduccionPorFecha = (fechaInicio, fechaFin) => {
 };
 
 export const getRegistroProduccion = (id) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de registro no válido' });
+  }
+  
   return axios.get(`${API_URL}/registros-produccion/${id}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getRegistroProduccion:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getRegistroProduccion'))
+    .catch(error => handleApiError(error, 'getRegistroProduccion'));
 };
 
 export const getRegistrosPorFecha = (fecha) => {
+  if (!fecha) {
+    return Promise.reject({ message: 'Fecha no válida' });
+  }
+  
   return axios.get(`${API_URL}/registros-produccion/fecha/${fecha}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getRegistrosPorFecha:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getRegistrosPorFecha'))
+    .catch(error => handleApiError(error, 'getRegistrosPorFecha'));
 };
 
 export const getRegistrosPorModulo = (idModulo) => {
+  if (!idModulo) {
+    return Promise.reject({ message: 'ID de módulo no válido' });
+  }
+  
   return axios.get(`${API_URL}/registros-produccion/modulo/${idModulo}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getRegistrosPorModulo:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getRegistrosPorModulo'))
+    .catch(error => handleApiError(error, 'getRegistrosPorModulo'));
 };
 
 export const getRegistrosPorReferencia = (idReferencia) => {
+  if (!idReferencia) {
+    return Promise.reject({ message: 'ID de referencia no válido' });
+  }
+  
   return axios.get(`${API_URL}/registros-produccion/referencia/${idReferencia}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getRegistrosByReferencia:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getRegistrosPorReferencia'))
+    .catch(error => handleApiError(error, 'getRegistrosPorReferencia'));
 };
 
 export const createRegistroProduccion = (data) => {
-  console.log('API createRegistroProduccion - datos enviados:', data);
+  if (!data || !data.id_asignacion_modulo || !data.id_asignacion_referencia || !data.id_franja || !data.fecha) {
+    return Promise.reject({ message: 'Datos de registro incompletos' });
+  }
+  
   return axios.post(`${API_URL}/registros-produccion`, data)
-    .then(response => response.data)
+    .then(response => {
+      console.log('Respuesta exitosa del servidor:', response.data);
+      return processResponse(response, 'createRegistroProduccion');
+    })
     .catch(error => {
-      console.error('Error en createRegistroProduccion:', error.response?.data || error.message);
-      throw error;
+      console.error('Error detallado en createRegistroProduccion:', error);
+      if (error.response && error.response.data) {
+        console.error('Mensaje de error del servidor:', error.response.data.message);
+      }
+      return handleApiError(error, 'createRegistroProduccion');
     });
 };
 
 export const updateRegistroProduccion = (id, data) => {
-  console.log('API updateRegistroProduccion - datos enviados:', data);
+  if (!id) {
+    return Promise.reject({ message: 'ID de registro no válido' });
+  }
+  
+  if (!data) {
+    return Promise.reject({ message: 'Datos de registro incompletos' });
+  }
+  
   return axios.put(`${API_URL}/registros-produccion/${id}`, data)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en updateRegistroProduccion:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'updateRegistroProduccion'))
+    .catch(error => handleApiError(error, 'updateRegistroProduccion'));
 };
 
 export const deleteRegistroProduccion = (id) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de registro no válido' });
+  }
+  
   return axios.delete(`${API_URL}/registros-produccion/${id}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en deleteRegistroProduccion:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'deleteRegistroProduccion'))
+    .catch(error => handleApiError(error, 'deleteRegistroProduccion'));
 };
 
 export const getRegistrosByDateRange = (startDate, endDate) => {

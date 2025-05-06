@@ -152,6 +152,32 @@ const AsignacionModuloView = () => {
           </div>
         </div>
       </div>
+
+      {/* Acciones Relacionadas */}
+      <div className="card mb-4">
+        <div className="card-header bg-light">
+          <h4>Acciones Relacionadas</h4>
+        </div>
+        <div className="card-body">
+          <div className="d-flex gap-3">
+            <Link 
+              to={`/registros-produccion/new?moduloId=${asignacion.id_asignacion}`}
+              className="btn btn-primary"
+            >
+              <i className="fas fa-plus-circle me-2"></i>
+              Crear Registro de Producción
+            </Link>
+            
+            <Link 
+              to={`/registros-produccion`}
+              className="btn btn-info"
+            >
+              <i className="fas fa-clipboard-list me-2"></i>
+              Ver Registros de Producción
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

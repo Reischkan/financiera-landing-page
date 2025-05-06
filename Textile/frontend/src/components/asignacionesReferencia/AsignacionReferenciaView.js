@@ -313,6 +313,36 @@ const AsignacionReferenciaView = () => {
           </div>
         </div>
       )}
+
+      {/* Acciones Relacionadas */}
+      <div className="row mt-2">
+        <div className="col-md-12">
+          <div className="card mb-4 shadow-sm">
+            <div className="card-header bg-light">
+              <h3 className="card-title mb-0">Acciones Relacionadas</h3>
+            </div>
+            <div className="card-body">
+              <div className="d-flex gap-3">
+                <Link 
+                  to={`/registros-produccion/new?referenciaId=${asignacion.id_asignacion_referencia}&moduloId=${asignacion.id_modulo}`}
+                  className="btn btn-primary"
+                >
+                  <i className="fas fa-plus-circle me-2"></i>
+                  Crear Registro de Producción
+                </Link>
+                
+                <Link 
+                  to={`/registros-produccion`}
+                  className="btn btn-info"
+                >
+                  <i className="fas fa-clipboard-list me-2"></i>
+                  Ver Registros de Producción
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

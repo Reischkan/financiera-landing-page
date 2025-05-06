@@ -43,6 +43,11 @@ import FranjaHorariaList from './components/franjasHorarias/FranjaHorariaList';
 import FranjaHorariaForm from './components/franjasHorarias/FranjaHorariaForm';
 import FranjaHorariaView from './components/franjasHorarias/FranjaHorariaView';
 
+// Componentes de Registros de Producción
+import RegistroProduccionList from './components/registrosProduccion/RegistroProduccionList';
+import RegistroProduccionForm from './components/registrosProduccion/RegistroProduccionForm';
+import RegistroProduccionView from './components/registrosProduccion/RegistroProduccionView';
+
 // Interceptor Axios (opcional)
 import axios from 'axios';
 
@@ -185,10 +190,11 @@ function App() {
               <Route path="/franjas-horarias/edit/:id" element={<FranjaHorariaForm />} />
               <Route path="/franjas-horarias/:id" element={<FranjaHorariaView />} />
               
-              {/* Rutas de Producción */}
-              <Route path="/produccion" element={<PlaceholderPage title="Producción" />} />
-              <Route path="/registros-produccion" element={<PlaceholderPage title="Registros de Producción" />} />
-              <Route path="/historial-produccion" element={<PlaceholderPage title="Historial de Producción" />} />
+              {/* Rutas de Registros de Producción */}
+              <Route path="/registros-produccion" element={<RegistroProduccionList />} />
+              <Route path="/registros-produccion/new" element={<RegistroProduccionForm />} />
+              <Route path="/registros-produccion/edit/:id" element={<RegistroProduccionForm />} />
+              <Route path="/registros-produccion/view/:id" element={<RegistroProduccionView />} />
               
               {/* Ruta 404 */}
               <Route path="*" element={<NotFound />} />

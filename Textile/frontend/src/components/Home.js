@@ -107,11 +107,11 @@ const Home = () => {
           <div className="col-md-4 mb-4">
             <div className="card text-center h-100">
               <div className="card-body">
-                <i className="fas fa-chart-line fa-3x mb-3 text-warning"></i>
-                <h5 className="card-title">Producción</h5>
-                <p className="card-text">Seguimiento de la producción.</p>
-                <Link to="/produccion" className="btn btn-warning">
-                  <i className="fas fa-arrow-right me-1"></i> Ir a Producción
+                <i className="fas fa-industry fa-3x mb-3 text-warning"></i>
+                <h5 className="card-title">Registros de Producción</h5>
+                <p className="card-text">Gestiona el seguimiento y control de la producción diaria.</p>
+                <Link to="/registros-produccion" className="btn btn-warning">
+                  <i className="fas fa-arrow-right me-1"></i> Ir a Registros
                 </Link>
               </div>
             </div>

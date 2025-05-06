@@ -42,6 +42,87 @@ async function initializeDatabase() {
       console.log(`La tabla FranjaHoraria ya contiene ${count} registros`);
     }
 
+    // Crear tabla RegistroProduccion si no existe
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS RegistroProduccion (
+        id_registro INT PRIMARY KEY AUTO_INCREMENT,
+        id_asignacion_modulo INT NOT NULL,
+        id_asignacion_referencia INT NOT NULL,
+        id_franja INT NOT NULL,
+        fecha DATE NOT NULL,
+        minutos_producidos DECIMAL(10,2) NOT NULL DEFAULT 0,
+        observaciones TEXT,
+        FOREIGN KEY (id_franja) REFERENCES FranjaHoraria(id_franja),
+        CONSTRAINT UC_registro_produccion UNIQUE (id_asignacion_modulo, id_asignacion_referencia, id_franja, fecha)
+      )
+    `);
+    console.log('Tabla RegistroProduccion creada o ya existente');
+
+    // Verificar si hay datos en la tabla RegistroProduccion
+    const [registrosRows] = await connection.execute('SELECT COUNT(*) as count FROM RegistroProduccion');
+    const registrosCount = registrosRows[0].count;
+
+    // Verificar que tengamos asignaciones de módulo y referencia para crear registros de ejemplo
+    const [asignacionesModulo] = await connection.execute('SELECT id_asignacion FROM AsignacionModulo LIMIT 5');
+    const [asignacionesReferencia] = await connection.execute('SELECT id_asignacion_referencia FROM AsignacionReferencia LIMIT 5');
+    const [franjasHorarias] = await connection.execute('SELECT id_franja FROM FranjaHoraria LIMIT 5');
+
+    if (registrosCount === 0 && asignacionesModulo.length > 0 && asignacionesReferencia.length > 0 && franjasHorarias.length > 0) {
+      console.log('Insertando datos de ejemplo en RegistroProduccion...');
+      
+      // Fechas de ejemplo para los últimos 5 días
+      const fechaHoy = new Date();
+      const fechas = [];
+      for (let i = 0; i < 5; i++) {
+        const fecha = new Date(fechaHoy);
+        fecha.setDate(fechaHoy.getDate() - i);
+        fechas.push(fecha.toISOString().split('T')[0]); // Formato YYYY-MM-DD
+      }
+
+      // Insertar varios registros de ejemplo
+      for (let i = 0; i < Math.min(asignacionesModulo.length, asignacionesReferencia.length); i++) {
+        const idAsignacionModulo = asignacionesModulo[i].id_asignacion;
+        const idAsignacionReferencia = asignacionesReferencia[i].id_asignacion_referencia;
+        
+        for (let j = 0; j < Math.min(franjasHorarias.length, 3); j++) {
+          const idFranja = franjasHorarias[j].id_franja;
+          const fecha = fechas[Math.floor(Math.random() * fechas.length)];
+          const minutosProducidos = (Math.random() * 50 + 10).toFixed(2); // Entre 10 y 60 minutos
+          
+          try {
+            await connection.execute(`
+              INSERT INTO RegistroProduccion 
+              (id_asignacion_modulo, id_asignacion_referencia, id_franja, fecha, minutos_producidos, observaciones) 
+              VALUES (?, ?, ?, ?, ?, ?)
+            `, [
+              idAsignacionModulo,
+              idAsignacionReferencia,
+              idFranja,
+              fecha,
+              minutosProducidos,
+              `Registro de ejemplo generado automáticamente ${fecha}`
+            ]);
+            console.log(`Registro de producción creado para módulo ${idAsignacionModulo}, referencia ${idAsignacionReferencia}, franja ${idFranja}, fecha ${fecha}`);
+          } catch (error) {
+            // Si hay error de duplicados, continuamos con el siguiente
+            if (error.code === 'ER_DUP_ENTRY') {
+              console.log(`Registro duplicado, omitiendo: ${idAsignacionModulo}, ${idAsignacionReferencia}, ${idFranja}, ${fecha}`);
+            } else {
+              console.error('Error al insertar registro de producción:', error);
+            }
+          }
+        }
+      }
+      
+      // Verificar cuántos registros se insertaron
+      const [newCount] = await connection.execute('SELECT COUNT(*) as count FROM RegistroProduccion');
+      console.log(`Se insertaron ${newCount[0].count} registros de ejemplo en la tabla RegistroProduccion`);
+    } else if (registrosCount > 0) {
+      console.log(`La tabla RegistroProduccion ya contiene ${registrosCount} registros`);
+    } else {
+      console.log('No se pudieron insertar datos de ejemplo en RegistroProduccion: faltan asignaciones previas');
+    }
+
     console.log('Base de datos inicializada correctamente');
   } catch (error) {
     console.error('Error al inicializar la base de datos:', error);

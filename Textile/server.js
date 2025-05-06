@@ -39,7 +39,7 @@ app.use('/api/asignaciones-modulo', require('./backend/routes/asignacionModulo.r
 app.use('/api/asignaciones-referencia', require('./backend/routes/asignacionReferencia.routes'));
 app.use('/api/tallas-referencia', require('./backend/routes/tallaReferencia.routes'));
 app.use('/api/franjas-horarias', require('./backend/routes/franjaHoraria.routes'));
-// app.use('/api/registros-produccion', require('./backend/routes/registroProduccion.routes')); // Ruta no implementada todavía
+app.use('/api/registros-produccion', require('./backend/routes/registroProduccion.routes'));
 
 // TODO: Implementar el resto de las rutas para cada entidad
 // - Ausencia
