@@ -155,20 +155,18 @@ export const deletePersona = (id) => {
 // Referencias
 export const getReferencias = () => {
   return axios.get(`${API_URL}/referencias`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getReferencias:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getReferencias'))
+    .catch(error => handleApiError(error, 'getReferencias'));
 };
 
 export const getReferencia = (id) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de referencia no válido' });
+  }
+  
   return axios.get(`${API_URL}/referencias/${id}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getReferencia:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getReferencia'))
+    .catch(error => handleApiError(error, 'getReferencia'));
 };
 
 export const createReferencia = (data) => {
@@ -274,83 +272,96 @@ export const deleteAsignacionModulo = (id) => {
 // Asignaciones de Referencias
 export const getAsignacionesReferencia = () => {
   return axios.get(`${API_URL}/asignaciones-referencia`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getAsignacionesReferencia:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getAsignacionesReferencia'))
+    .catch(error => handleApiError(error, 'getAsignacionesReferencia'));
 };
 
 export const getAsignacionReferencia = (id) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de asignación no válido' });
+  }
+  
   return axios.get(`${API_URL}/asignaciones-referencia/${id}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getAsignacionReferencia:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getAsignacionReferencia'))
+    .catch(error => handleApiError(error, 'getAsignacionReferencia'));
 };
 
 export const getAsignacionesReferenciaPorModulo = (idModulo) => {
+  if (!idModulo) {
+    return Promise.reject({ message: 'ID de módulo no válido' });
+  }
+  
   return axios.get(`${API_URL}/asignaciones-referencia/modulo/${idModulo}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getAsignacionesReferenciaPorModulo:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getAsignacionesReferenciaPorModulo'))
+    .catch(error => handleApiError(error, 'getAsignacionesReferenciaPorModulo'));
 };
 
 export const getAsignacionesReferenciaPorReferencia = (idReferencia) => {
+  if (!idReferencia) {
+    return Promise.reject({ message: 'ID de referencia no válido' });
+  }
+  
   return axios.get(`${API_URL}/asignaciones-referencia/referencia/${idReferencia}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getAsignacionesReferenciaPorReferencia:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getAsignacionesReferenciaPorReferencia'))
+    .catch(error => handleApiError(error, 'getAsignacionesReferenciaPorReferencia'));
 };
 
 export const createAsignacionReferencia = (data) => {
+  if (!data || !data.id_modulo || !data.id_referencia) {
+    return Promise.reject({ message: 'Datos de asignación incompletos' });
+  }
+  
   return axios.post(`${API_URL}/asignaciones-referencia`, data)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en createAsignacionReferencia:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'createAsignacionReferencia'))
+    .catch(error => handleApiError(error, 'createAsignacionReferencia'));
 };
 
 export const updateAsignacionReferencia = (id, data) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de asignación no válido' });
+  }
+  
+  if (!data) {
+    return Promise.reject({ message: 'Datos de asignación incompletos' });
+  }
+  
   return axios.put(`${API_URL}/asignaciones-referencia/${id}`, data)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en updateAsignacionReferencia:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'updateAsignacionReferencia'))
+    .catch(error => handleApiError(error, 'updateAsignacionReferencia'));
 };
 
 export const completarAsignacionReferencia = (id) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de asignación no válido' });
+  }
+  
   return axios.put(`${API_URL}/asignaciones-referencia/${id}/completar`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en completarAsignacionReferencia:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'completarAsignacionReferencia'))
+    .catch(error => handleApiError(error, 'completarAsignacionReferencia'));
 };
 
 export const actualizarAvanceReferencia = (id, minutosProducidos) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de asignación no válido' });
+  }
+  
+  if (isNaN(minutosProducidos)) {
+    return Promise.reject({ message: 'Minutos producidos no válidos' });
+  }
+  
   return axios.put(`${API_URL}/asignaciones-referencia/${id}/avance`, { minutos_producidos: minutosProducidos })
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en actualizarAvanceReferencia:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'actualizarAvanceReferencia'))
+    .catch(error => handleApiError(error, 'actualizarAvanceReferencia'));
 };
 
 export const deleteAsignacionReferencia = (id) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de asignación no válido' });
+  }
+  
   return axios.delete(`${API_URL}/asignaciones-referencia/${id}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en deleteAsignacionReferencia:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'deleteAsignacionReferencia'))
+    .catch(error => handleApiError(error, 'deleteAsignacionReferencia'));
 };
 
 // Tallas de Referencia

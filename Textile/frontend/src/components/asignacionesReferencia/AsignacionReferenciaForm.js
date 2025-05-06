@@ -41,13 +41,15 @@ const AsignacionReferenciaForm = () => {
           getModulos()
         ]);
         
-        setReferencias(refResponse.data || []);
-        setModulos(modulosResponse.data || []);
+        // Las funciones API ahora devuelven los datos directamente mediante processResponse
+        setReferencias(refResponse || []);
+        setModulos(modulosResponse || []);
         
         // Si estamos editando, cargar los datos de la asignación
         if (isEditing) {
           const asignacionResponse = await getAsignacionReferencia(id);
-          const asignacion = asignacionResponse.data || {};
+          // getAsignacionReferencia ya usa processResponse
+          const asignacion = asignacionResponse || {};
           
           setFormData({
             id_modulo: asignacion.id_modulo || '',
@@ -122,7 +124,8 @@ const AsignacionReferenciaForm = () => {
         });
       } else {
         const response = await createAsignacionReferencia(payload);
-        const newId = response.data.id_asignacion_referencia;
+        // createAsignacionReferencia ahora devuelve directamente los datos procesados
+        const newId = response.id_asignacion_referencia;
         
         Swal.fire({
           icon: 'success',
