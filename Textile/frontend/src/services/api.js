@@ -109,47 +109,52 @@ export const deleteModulo = (id) => {
 // Personas
 export const getPersonas = () => {
   return axios.get(`${API_URL}/personas`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getPersonas:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getPersonas'))
+    .catch(error => handleApiError(error, 'getPersonas'));
 };
 
 export const getPersona = (id) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de persona no válido' });
+  }
+  
   return axios.get(`${API_URL}/personas/${id}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getPersona:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getPersona'))
+    .catch(error => handleApiError(error, 'getPersona'));
 };
 
 export const createPersona = (data) => {
+  if (!data || !data.nombre) {
+    return Promise.reject({ message: 'Datos de persona incompletos' });
+  }
+  
   return axios.post(`${API_URL}/personas`, data)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en createPersona:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'createPersona'))
+    .catch(error => handleApiError(error, 'createPersona'));
 };
 
 export const updatePersona = (id, data) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de persona no válido' });
+  }
+  
+  if (!data) {
+    return Promise.reject({ message: 'Datos de persona incompletos' });
+  }
+  
   return axios.put(`${API_URL}/personas/${id}`, data)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en updatePersona:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'updatePersona'))
+    .catch(error => handleApiError(error, 'updatePersona'));
 };
 
 export const deletePersona = (id) => {
+  if (!id) {
+    return Promise.reject({ message: 'ID de persona no válido' });
+  }
+  
   return axios.delete(`${API_URL}/personas/${id}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en deletePersona:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'deletePersona'))
+    .catch(error => handleApiError(error, 'deletePersona'));
 };
 
 // Referencias
@@ -199,20 +204,14 @@ export const deleteReferencia = (id) => {
 // Asignaciones de Módulos
 export const getAsignacionesModulo = () => {
   return axios.get(`${API_URL}/asignaciones-modulo`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getAsignacionesModulo:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getAsignacionesModulo'))
+    .catch(error => handleApiError(error, 'getAsignacionesModulo'));
 };
 
 export const getAsignacionModulo = (id) => {
   return axios.get(`${API_URL}/asignaciones-modulo/${id}`)
-    .then(response => response.data)
-    .catch(error => {
-      console.error('Error en getAsignacionModulo:', error.response?.data || error.message);
-      throw error;
-    });
+    .then(response => processResponse(response, 'getAsignacionModulo'))
+    .catch(error => handleApiError(error, 'getAsignacionModulo'));
 };
 
 export const getAsignacionesPorModulo = (idModulo) => {
@@ -619,4 +618,98 @@ axios.interceptors.response.use(
     }
     return Promise.reject(error);
   }
-); 
+);
+
+export const getAusencias = () => {
+  const functionName = 'getAusencias';
+  return fetch(`${API_URL}/ausencias`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch(error => handleApiError(error, functionName));
+};
+
+export const getAusencia = (id) => {
+  const functionName = 'getAusencia';
+  return fetch(`${API_URL}/ausencias/${id}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch(error => handleApiError(error, functionName));
+};
+
+export const getAusenciasPorPersona = (idPersona) => {
+  const functionName = 'getAusenciasPorPersona';
+  return fetch(`${API_URL}/ausencias/persona/${idPersona}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch(error => handleApiError(error, functionName));
+};
+
+export const getAusenciasPorFecha = (fechaInicio, fechaFin) => {
+  const functionName = 'getAusenciasPorFecha';
+  return fetch(`${API_URL}/ausencias/fechas/${fechaInicio}/${fechaFin}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch(error => handleApiError(error, functionName));
+};
+
+export const createAusencia = (data) => {
+  const functionName = 'createAusencia';
+  return fetch(`${API_URL}/ausencias`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch(error => handleApiError(error, functionName));
+};
+
+export const updateAusencia = (id, data) => {
+  const functionName = 'updateAusencia';
+  return fetch(`${API_URL}/ausencias/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch(error => handleApiError(error, functionName));
+};
+
+export const deleteAusencia = (id) => {
+  const functionName = 'deleteAusencia';
+  return fetch(`${API_URL}/ausencias/${id}`, {
+    method: 'DELETE'
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch(error => handleApiError(error, functionName));
+}; 

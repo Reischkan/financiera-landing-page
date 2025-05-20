@@ -29,13 +29,17 @@ const AsignacionModuloForm = () => {
     const fetchDependencies = async () => {
       setLoading(true);
       try {
-        const [personasRes, modulosRes] = await Promise.all([
+        const [personasData, modulosData] = await Promise.all([
           getPersonas(),
           getModulos()
         ]);
         
-        setPersonas(personasRes.data);
-        setModulos(modulosRes.data);
+        // API functions already return the processed data, no need to access .data again
+        setPersonas(Array.isArray(personasData) ? personasData : []);
+        setModulos(Array.isArray(modulosData) ? modulosData : []);
+        
+        console.log('Personas cargadas:', personasData);
+        console.log('Módulos cargados:', modulosData);
       } catch (err) {
         setError('Error al cargar datos necesarios. Por favor, intente de nuevo.');
         console.error('Error al cargar datos:', err);
@@ -52,20 +56,23 @@ const AsignacionModuloForm = () => {
       if (isEditing) {
         setLoading(true);
         try {
-          const response = await getAsignacionModulo(id);
-          const asignacion = response.data;
+          const asignacion = await getAsignacionModulo(id);
           
           // Formato de fecha para el input date
-          const fechaAsignacion = asignacion.fecha_asignacion 
+          const fechaAsignacion = asignacion?.fecha_asignacion 
             ? new Date(asignacion.fecha_asignacion).toISOString().split('T')[0]
             : '';
           
-          setFormData({
-            id_persona: asignacion.id_persona,
-            id_modulo: asignacion.id_modulo,
-            fecha_asignacion: fechaAsignacion,
-            estado: asignacion.estado || 'activo'
-          });
+          console.log('Asignación cargada:', asignacion);
+          
+          if (asignacion) {
+            setFormData({
+              id_persona: asignacion.id_persona,
+              id_modulo: asignacion.id_modulo,
+              fecha_asignacion: fechaAsignacion,
+              estado: asignacion.estado || 'activo'
+            });
+          }
         } catch (err) {
           setError('Error al cargar la asignación. Por favor, intente de nuevo.');
           console.error('Error al cargar la asignación:', err);

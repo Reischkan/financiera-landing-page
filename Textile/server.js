@@ -40,9 +40,9 @@ app.use('/api/asignaciones-referencia', require('./backend/routes/asignacionRefe
 app.use('/api/tallas-referencia', require('./backend/routes/tallaReferencia.routes'));
 app.use('/api/franjas-horarias', require('./backend/routes/franjaHoraria.routes'));
 app.use('/api/registros-produccion', require('./backend/routes/registroProduccion.routes'));
+app.use('/api/ausencias', require('./backend/routes/ausencia.routes'));
 
 // TODO: Implementar el resto de las rutas para cada entidad
-// - Ausencia
 // - Nota
 // - HistorialProduccion
 // - Usuario

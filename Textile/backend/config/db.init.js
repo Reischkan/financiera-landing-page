@@ -58,6 +58,20 @@ async function initializeDatabase() {
     `);
     console.log('Tabla RegistroProduccion creada o ya existente');
 
+    // Crear tabla Ausencia si no existe
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS Ausencia (
+        id_ausencia INT AUTO_INCREMENT PRIMARY KEY,
+        id_persona INT NOT NULL,
+        fecha_inicio DATE NOT NULL,
+        fecha_fin DATE NOT NULL,
+        motivo TEXT NOT NULL,
+        justificada BOOLEAN DEFAULT FALSE,
+        FOREIGN KEY (id_persona) REFERENCES Persona(id_persona)
+      )
+    `);
+    console.log('Tabla Ausencia creada o ya existente');
+
     // Verificar si hay datos en la tabla RegistroProduccion
     const [registrosRows] = await connection.execute('SELECT COUNT(*) as count FROM RegistroProduccion');
     const registrosCount = registrosRows[0].count;
@@ -121,6 +135,67 @@ async function initializeDatabase() {
       console.log(`La tabla RegistroProduccion ya contiene ${registrosCount} registros`);
     } else {
       console.log('No se pudieron insertar datos de ejemplo en RegistroProduccion: faltan asignaciones previas');
+    }
+
+    // Verificar si hay datos en la tabla Ausencia
+    const [ausenciasRows] = await connection.execute('SELECT COUNT(*) as count FROM Ausencia');
+    const ausenciasCount = ausenciasRows[0].count;
+
+    // Verificar que tengamos personas para crear ausencias de ejemplo
+    const [personas] = await connection.execute('SELECT id_persona FROM Persona LIMIT 5');
+
+    if (ausenciasCount === 0 && personas.length > 0) {
+      console.log('Insertando datos de ejemplo en Ausencia...');
+      
+      // Fechas de ejemplo para ausencias
+      const fechaHoy = new Date();
+      const ausencias = [];
+      
+      // Crear algunas ausencias de ejemplo
+      for (let i = 0; i < personas.length; i++) {
+        const idPersona = personas[i].id_persona;
+        
+        // Crear ausencia con fecha aleatoria en los próximos 30 días
+        const fechaInicio = new Date(fechaHoy);
+        fechaInicio.setDate(fechaHoy.getDate() + Math.floor(Math.random() * 30));
+        const fechaFin = new Date(fechaInicio);
+        fechaFin.setDate(fechaInicio.getDate() + Math.floor(Math.random() * 5) + 1); // 1-5 días de ausencia
+        
+        const motivos = [
+          'Enfermedad', 
+          'Asuntos personales', 
+          'Cita médica', 
+          'Licencia familiar', 
+          'Capacitación'
+        ];
+        const motivoIndex = Math.floor(Math.random() * motivos.length);
+        const justificada = Math.random() > 0.3; // 70% de probabilidad de estar justificada
+
+        try {
+          await connection.execute(`
+            INSERT INTO Ausencia 
+            (id_persona, fecha_inicio, fecha_fin, motivo, justificada) 
+            VALUES (?, ?, ?, ?, ?)
+          `, [
+            idPersona,
+            fechaInicio.toISOString().split('T')[0],
+            fechaFin.toISOString().split('T')[0],
+            motivos[motivoIndex],
+            justificada
+          ]);
+          console.log(`Ausencia creada para persona ${idPersona}, desde ${fechaInicio.toISOString().split('T')[0]} hasta ${fechaFin.toISOString().split('T')[0]}`);
+        } catch (error) {
+          console.error('Error al insertar ausencia de ejemplo:', error);
+        }
+      }
+      
+      // Verificar cuántas ausencias se insertaron
+      const [newAusenciasCount] = await connection.execute('SELECT COUNT(*) as count FROM Ausencia');
+      console.log(`Se insertaron ${newAusenciasCount[0].count} ausencias de ejemplo en la tabla Ausencia`);
+    } else if (ausenciasCount > 0) {
+      console.log(`La tabla Ausencia ya contiene ${ausenciasCount} registros`);
+    } else {
+      console.log('No se pudieron insertar datos de ejemplo en Ausencia: faltan personas registradas');
     }
 
     console.log('Base de datos inicializada correctamente');

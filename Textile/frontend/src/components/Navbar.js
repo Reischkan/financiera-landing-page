@@ -119,6 +119,30 @@ const Navbar = () => {
                 </li>
               </ul>
             </li>
+            <li className="nav-item dropdown">
+              <a
+                className="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdownPersonal"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i className="fas fa-user-clock me-1"></i> Personal
+              </a>
+              <ul className="dropdown-menu" aria-labelledby="navbarDropdownPersonal">
+                <li>
+                  <NavLink className="dropdown-item" to="/ausencias">
+                    <i className="fas fa-calendar-minus me-1"></i> Ausencias
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/ausencias/nueva">
+                    <i className="fas fa-plus-circle me-1"></i> Registrar Ausencia
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>

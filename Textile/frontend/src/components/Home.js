@@ -116,6 +116,19 @@ const Home = () => {
               </div>
             </div>
           </div>
+          
+          <div className="col-md-4 mb-4">
+            <div className="card text-center h-100">
+              <div className="card-body">
+                <i className="fas fa-calendar-minus fa-3x mb-3" style={{ color: '#e67e22' }}></i>
+                <h5 className="card-title">Ausencias</h5>
+                <p className="card-text">Administra las ausencias del personal.</p>
+                <Link to="/ausencias" className="btn" style={{ backgroundColor: '#e67e22', color: 'white' }}>
+                  <i className="fas fa-arrow-right me-1"></i> Ir a Ausencias
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

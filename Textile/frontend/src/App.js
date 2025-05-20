@@ -48,6 +48,11 @@ import RegistroProduccionList from './components/registrosProduccion/RegistroPro
 import RegistroProduccionForm from './components/registrosProduccion/RegistroProduccionForm';
 import RegistroProduccionView from './components/registrosProduccion/RegistroProduccionView';
 
+// Componentes de Ausencias
+import AusenciasList from './components/ausencias/AusenciasList';
+import AusenciaForm from './components/ausencias/AusenciaForm';
+import AusenciaView from './components/ausencias/AusenciaView';
+
 // Interceptor Axios (opcional)
 import axios from 'axios';
 
@@ -195,6 +200,12 @@ function App() {
               <Route path="/registros-produccion/new" element={<RegistroProduccionForm />} />
               <Route path="/registros-produccion/edit/:id" element={<RegistroProduccionForm />} />
               <Route path="/registros-produccion/view/:id" element={<RegistroProduccionView />} />
+              
+              {/* Rutas de Ausencias */}
+              <Route path="/ausencias" element={<AusenciasList />} />
+              <Route path="/ausencias/nueva" element={<AusenciaForm />} />
+              <Route path="/ausencias/editar/:id" element={<AusenciaForm />} />
+              <Route path="/ausencias/:id" element={<AusenciaView />} />
               
               {/* Ruta 404 */}
               <Route path="*" element={<NotFound />} />
