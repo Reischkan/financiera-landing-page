@@ -12,17 +12,35 @@ const ModuloView = () => {
     const fetchModulo = async () => {
       try {
         const response = await getModulo(id);
-        setModulo(response.data);
-        setError(null);
+        // Verificar si la respuesta tiene la estructura { success, data }
+        if (response && response.success !== undefined) {
+          if (response.success && response.data) {
+            setModulo(response.data);
+            setError(null);
+          } else {
+            setError(response.message || 'No se encontró el módulo.');
+            setModulo(null);
+          }
+        } else {
+          // Manejar el caso en que la respuesta no tiene el formato esperado
+          setModulo(response || null);
+          setError(null);
+        }
       } catch (err) {
-        setError('Error al cargar los datos del módulo. Por favor, intente de nuevo.');
         console.error('Error al cargar el módulo:', err);
+        setError('Error al cargar los datos del módulo. Por favor, intente de nuevo.');
+        setModulo(null);
       } finally {
         setLoading(false);
       }
     };
     
-    fetchModulo();
+    if (id) {
+      fetchModulo();
+    } else {
+      setError('ID de módulo no proporcionado');
+      setLoading(false);
+    }
   }, [id]);
 
   if (loading) {

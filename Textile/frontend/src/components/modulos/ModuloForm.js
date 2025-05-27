@@ -19,10 +19,10 @@ const ModuloForm = () => {
     if (isEditMode) {
       const fetchModulo = async () => {
         try {
-          const response = await getModulo(id);
+          const modulo = await getModulo(id);
           setFormData({
-            nombre: response.data.nombre,
-            estado: response.data.estado
+            nombre: modulo.nombre || '',
+            estado: modulo.estado || 'activo'
           });
           setError(null);
         } catch (err) {

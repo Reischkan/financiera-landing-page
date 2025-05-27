@@ -2,35 +2,74 @@ const Modulo = require('../models/modulo.model');
 const { connectToDatabase } = require('../config/db.connection');
 
 exports.findAll = async (req, res) => {
+    let connection;
     try {
-        const connection = await connectToDatabase();
+        connection = await connectToDatabase();
         const modulos = await Modulo.getAll(connection);
-        await connection.end();
-        res.json(modulos);
+        res.json({
+            success: true,
+            data: modulos
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message || 'Error al obtener módulos' });
+        console.error('Error en findAll:', error);
+        res.status(500).json({ 
+            success: false,
+            message: error.message || 'Error al obtener módulos',
+            error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    } finally {
+        if (connection) {
+            try {
+                await connection.end();
+            } catch (e) {
+                console.error('Error cerrando la conexión:', e);
+            }
+        }
     }
 };
 
 exports.findOne = async (req, res) => {
+    let connection;
     try {
-        const connection = await connectToDatabase();
+        connection = await connectToDatabase();
         const modulo = await Modulo.getById(connection, req.params.id);
-        await connection.end();
         
         if (!modulo) {
-            return res.status(404).json({ message: 'Módulo no encontrado' });
+            return res.status(404).json({ 
+                success: false,
+                message: 'Módulo no encontrado' 
+            });
         }
         
-        res.json(modulo);
+        res.json({
+            success: true,
+            data: modulo
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message || 'Error al obtener el módulo' });
+        console.error('Error en findOne:', error);
+        res.status(500).json({ 
+            success: false,
+            message: error.message || 'Error al obtener el módulo',
+            error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    } finally {
+        if (connection) {
+            try {
+                await connection.end();
+            } catch (e) {
+                console.error('Error cerrando la conexión:', e);
+            }
+        }
     }
 };
 
 exports.create = async (req, res) => {
     // Validar la solicitud
     if (!req.body.nombre) {
+        return res.status(400).json({ 
+            success: false,
+            message: 'El nombre del módulo es requerido' 
+        });
         return res.status(400).json({ message: 'El nombre del módulo es requerido' });
     }
 

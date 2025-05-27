@@ -39,16 +39,22 @@ const processResponse = (response, functionName) => {
   try {
     // Verificar si la respuesta tiene la propiedad data
     if (response && response.data !== undefined) {
-      return response.data;
-    }
-    
-    // Si response ya es el dato que queremos (axios ya extrajo data)
-    if (response) {
-      return response;
+      const responseData = response.data;
+      
+      // Verificar si la respuesta tiene el formato { success, data, message }
+      if (responseData && typeof responseData === 'object' && 'success' in responseData) {
+        if (!responseData.success) {
+          console.error(`${functionName}: Error en la respuesta del servidor`, responseData.message);
+          throw new Error(responseData.message || 'Error en la operación');
+        }
+        return responseData.data || responseData;
+      }
+      
+      return responseData;
     }
     
     console.warn(`${functionName}: Respuesta inesperada`, response);
-    return []; // Valor predeterminado seguro
+    throw new Error('Formato de respuesta no válido del servidor');
   } catch (error) {
     console.error(`Error procesando respuesta en ${functionName}:`, error);
     return []; // Valor predeterminado seguro en caso de error
